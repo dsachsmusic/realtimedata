@@ -27,5 +27,6 @@ Set up Git...personal
     - ssh-add ~/.ssh/id_rsa
 	- ssh -T git@github.com (to test)
   - Tip: add the following to the .bashrc file 
+    - [ -z "$SSH_AUTH_SOCK" ] && eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_rsa_personal
 Troubleshooting
 - Hung?  From Terminal: "wsl --shutdown"....then relaunch (wsl)
