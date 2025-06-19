@@ -27,3 +27,26 @@ services:
       #("localhost", instead of "kafka", which is the service name within docker)
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  
+  #if running docker-compose up for this individually, use with -d flag
+  
+  flink-jobmanager:
+    image: flink:1.16.1
+    container_name: flink-jobmanager
+    #exposes webUI ...docker will expose to local machine...http://localhost:8081
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      #task manager will talk to job manager over RPC
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+
+  flink-taskmanager:
+    image: flink:1.16.1
+    container_name: flink-taskmanager
+    depends_on:
+      - flink-jobmanager
+    command: taskmanager
+    environment:
+      #job manager will talk to task manager over RPC
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
