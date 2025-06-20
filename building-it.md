@@ -1,0 +1,7 @@
+- Create the docker-compose file...with and zookeeper, kafka (or everything, why note)
+- Create producer.py
+- docker-compose up -d
+- from a separate window: python3 producer.py
+- from a separate window: docker exec -it kafka bash (gets into bash shell in the docker container "kafka")
+  - run kafka-console-consumer --bootstrap-server localhost:9092 --topic logs --from-beginning
+- 

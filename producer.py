@@ -25,6 +25,7 @@ def generate_log():
         "message": "Something happened!"
     }
 
+#while True is like while 1 = 1 (i.e. keep running forever, until ctrl+c)
 while True:
     log = generate_log()
     #send "log" to the "logs" topic

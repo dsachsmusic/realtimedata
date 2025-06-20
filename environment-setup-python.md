@@ -1,3 +1,11 @@
 In WSL
 - sudo apt install python3-pip
 - pip install kafka-python
+  - or, better yet, run python3 -m pip install kafka-python
+  - or best yet...do a virtual environment
+    - first do apt install python3.12-venv
+    - then python3 -m venv .venv
+    - then source .venv/bin/activate
+    - then, finally pip install kafka-python
+- pyflink- don't bother installing it...
+  - can't really run flink code from dev machine environment, because Flink Runtime isn't installed, and, kafka is connected

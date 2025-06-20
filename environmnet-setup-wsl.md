@@ -31,3 +31,18 @@ Set up Git...personal
     
 Troubleshooting
 - Hung?  From Terminal: "wsl --shutdown"....then relaunch (wsl)
+
+Visual Studio code and Python Shift+Enter
+- Shift+Enter in VSCode, while in .py file opens a new terminal...for some reason...
+  -...and that starts with default interpreter, instead of the venv interpreter
+  - at least this is the case when launch VS Code from from WSL (via" code .")...
+  - so...in VS Code, have to change interpreter...browse and find interpreter in venv path
+    - while in a .py file
+      - bottom right (of VS Code)...see interpreter (a version number?) next to launguae (Python)
+        - click on that...then, notice in menu, at top... "Enter interpreter path..."
+          - click that...then click "Find"
+          - browse to interpreter in ./venv folder...and select it
+            - example ./venv/bin/python3
+    - VS code...to right of terminal, will show an alert..."Python...". Hover over it and see "The following extensions want to relaunch the terminal to contribute to its environment..."....click "Relaunch Terminal
+
+      - 
