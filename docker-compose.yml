@@ -22,16 +22,23 @@ services:
       #Tells Kafka how to find Zookeeper 
       #— uses Docker service name zookeeper on port 2181.
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      #hostname and port external clients 
-      #(like code outside docker that tails log files) use to connect
-      #("localhost", instead of "kafka", which is the service name within docker)
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      #create two listeners, one on typical 9092, for flink, in container network...
+      # ... and one on 29092, for local host, for example, running kafka producer from wsl
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      
+      
+      #from wsl, use "localhost", instead of "kafka". kafka is the service name within docker
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      #security protocol map and inter broker listener name settings needed when more than one listener
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      environment:
   
   #if running docker-compose up for this individually, use with -d flag
   
   flink-jobmanager:
-    image: flink:1.16.1
+    image: dsachsmusic/flink1.19.2-with-pyflink
     container_name: flink-jobmanager
     #exposes webUI ...docker will expose to local machine...http://localhost:8081
     ports:
@@ -40,9 +47,13 @@ services:
     environment:
       #task manager will talk to job manager over RPC
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+    volumes:
+      # mount flink job python code in opt volume of container...
+      # note: this is not a "named volume...not persistent...recreated every time(?)"
+      - ./flink_job.py:/opt/flink_job.py
 
   flink-taskmanager:
-    image: flink:1.16.1
+    image: dsachsmusic/flink1.19.2-with-pyflink
     container_name: flink-taskmanager
     depends_on:
       - flink-jobmanager

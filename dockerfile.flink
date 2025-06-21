@@ -1,0 +1,31 @@
+# docker file for dsachsmusic/flink1.19.2-with-pyflink
+# extends docker image for flink from apache, adding python, and pyflink
+FROM apache/flink:1.19.2
+
+USER root
+
+# Install Python 3, pip and curl and any other needed packages
+RUN apt-get update && \
+    # curl is for getting kafka connector jar
+    apt-get install -y python3 python3-pip curl && \
+    # symlink python3 to python path, where flink runtime will call
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    # -- no-cache-dir here because caching the package adds bloat to image
+    # install pyflink (called apache-flink in pip)
+    pip3 install --no-cache-dir apache-flink
+
+
+# Download the Kafka connector JAR for Flink 1.19.x (version 3.3.0-1.19)
+# put it in the flink lib folder, so it’s automatically on the classpath, and flink knows where to find
+RUN curl -L -o /opt/flink/lib/flink-connector-kafka.jar \
+    https://repo1.maven.org/maven2/org/apache/flink/flink-connector-kafka/3.3.0-1.19/flink-connector-kafka-3.3.0-1.19.jar
+
+# Kafka client (needed by the connector)
+RUN curl -L -o /opt/flink/lib/kafka-clients-3.6.1.jar \
+    https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.6.1/kafka-clients-3.6.1.jar
+
+# Cleanup apt cache to reduce image size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Switch back to flink user (for running the Flink processes)
+USER flink
