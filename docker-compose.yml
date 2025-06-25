@@ -17,6 +17,7 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       #Tells Kafka how to find Zookeeper 
@@ -24,16 +25,16 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       #create two listeners, one on typical 9092, for flink, in container network...
       # ... and one on 29092, for local host, for example, running kafka producer from wsl
+      # have to do this, on oppose to hostport:containerport mapping in docker, because
+      # ...kafka advertises listeners...and clients have to use those advertised listeners?
+      # ...and kafka:9092 wouldn't work from outside the docker network (without hosts file/dns stuff)
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
-      
-      
       #from wsl, use "localhost", instead of "kafka". kafka is the service name within docker
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       #security protocol map and inter broker listener name settings needed when more than one listener
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      environment:
   
   #if running docker-compose up for this individually, use with -d flag
   
@@ -50,6 +51,7 @@ services:
     volumes:
       # mount flink job python code in opt volume of container...
       # note: this is not a "named volume...not persistent...recreated every time(?)"
+      # this is not a copy of a file, but a mount, from my local machine?
       - ./flink_job.py:/opt/flink_job.py
 
   flink-taskmanager:

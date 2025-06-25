@@ -8,7 +8,7 @@ import random
 # - Handles retries, batching, buffering, etc.
 # - Provides a .send() method for publishing messages
 producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',
+    bootstrap_servers='localhost:29092',
     #note: "lambda" defines an anonymous function (one liner, more or less)
     # - v is the (only) paramater...
     #note: value_serializer here...no key_serializer
@@ -31,7 +31,7 @@ while True:
     #send "log" to the "logs" topic
     #note: ok if not yet created, assuming auto.create.topics.enable=true
     # - to check can log into container and run:
-    #   - kafka-topics --bootstrap-server localhost:9092 --list
+    #   - kafka-topics --bootstrap-server localhost:29092 --list
     producer.send('logs', log)
     print(f"Sent: {log}")
     time.sleep(1)
